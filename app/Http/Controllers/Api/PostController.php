@@ -44,6 +44,7 @@ class PostController extends Controller
             $post = new Post();
             $post->title = $request->title;
             $post->description = $request->description;
+            $post->user_id = auth()->user()->id;
 
             $post->save();
 
@@ -67,8 +68,11 @@ class PostController extends Controller
         try{
             $post->title = $request->title;
             $post->description = $request->description;
+            $post->user_id = auth()->user()->id;
 
-            $post->update();
+            if ($post->user_id === auth()->user()->id) {
+                $post->update();
+            }
 
             return response()->json([
                 'status' => 200,
@@ -83,7 +87,9 @@ class PostController extends Controller
     {
         try {
             if ($post) {
-                $post->delete();
+                if ($post->user_id === auth()->user()->id) {
+                    $post->delete();
+                }
 
                 return response()->json([
                     'status' => 200,
